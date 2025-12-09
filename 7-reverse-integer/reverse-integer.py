@@ -1,32 +1,30 @@
 class Solution:
     def reverse(self, x: int) -> int:
-        rev=0
-        INT_MAX = 2**31 - 1
-        INT_MIN = -2**31
+        sign = -1 if x < 0 else 1
+        x = abs(x)
+
+        reversed_num = 0
+        # Define the 32-bit signed integer limits.
+        INT_MAX = 2**31 - 1  # 2147483647
 
         while x != 0:
-            # Python's // is floor division. To mimic C++/Java's truncation
-            # towards zero, we use int(x / 10).
-            # Python's % operator gives a positive remainder for negative numbers.
-            # To get the correct negative digit, we use x % -10.
-            pop = x % 10 if x >= 0 else x % -10
-            x = int(x / 10)
+            # Get the last digit of x.
+            digit = x % 10
 
-            # --- Overflow Check ---
-            # Before multiplying rev by 10, check if it would cause an overflow.
-            # The environment is assumed to be 32-bit, so we must simulate this.
-            
-            # Check for positive overflow
-            if rev > INT_MAX / 10 or (rev == INT_MAX / 10 and pop > 7):
+            # Check for overflow before appending the digit.
+            # If reversed_num is already larger than INT_MAX // 10,
+            # then reversed_num * 10 will definitely overflow.
+            # If reversed_num is equal to INT_MAX // 10, then the
+            # new digit must be less than or equal to INT_MAX % 10.
+            if reversed_num > INT_MAX // 10 or (reversed_num == INT_MAX // 10 and digit > INT_MAX % 10):
                 return 0
-            
-            # Check for negative overflow
-            if rev < INT_MIN / 10 or (rev == INT_MIN / 10 and pop < -8):
-                return 0
-            
-            # Append the digit to the reversed number
-            rev = rev * 10 + pop
-            
-        return rev
-        
+
+            # Append the digit to the reversed number.
+            reversed_num = reversed_num * 10 + digit
+
+            # Remove the last digit from x.
+            x //= 10
+
+        return sign * reversed_num
+
         
