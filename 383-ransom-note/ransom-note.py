@@ -1,15 +1,12 @@
 class Solution:
     def canConstruct(self, ransomNote: str, magazine: str) -> bool:
-        counts = [0] * 26
-        for ch in magazine:
-            counts[ord(ch) - ord('a')] += 1
-
-    # Check ransomNote against available letters
+        magazine_counts = Counter(magazine)
+    
+    # Try to build the ransom note
         for ch in ransomNote:
-            idx = ord(ch) - ord('a')
-            if counts[idx] == 0:
+            if magazine_counts[ch] == 0:  # Not enough of this character
                 return False
-            counts[idx] -= 1
-
+            magazine_counts[ch] -= 1  # Use one occurrence
+        
         return True
         
