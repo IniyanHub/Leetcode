@@ -1,12 +1,16 @@
 class Solution:
     def canConstruct(self, ransomNote: str, magazine: str) -> bool:
-        magazine_counts = Counter(magazine)
-    
-    # Try to build the ransom note
+        char_count = {}
+
+    # Count characters in magazine
+        for ch in magazine:
+            char_count[ch] = char_count.get(ch, 0) + 1
+
+    # Check ransomNote
         for ch in ransomNote:
-            if magazine_counts[ch] == 0:  # Not enough of this character
+            if char_count.get(ch, 0) == 0:
                 return False
-            magazine_counts[ch] -= 1  # Use one occurrence
-        
+            char_count[ch] -= 1
+
         return True
         
