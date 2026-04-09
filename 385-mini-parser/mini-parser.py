@@ -43,64 +43,45 @@
 
 class Solution:
     def deserialize(self, s: str) -> NestedInteger:
-        if not s:
-            return NestedInteger()
-        
-        # If the string does not start with '[', it is a single integer
         if s[0] != '[':
             return NestedInteger(int(s))
-        
+    
         stack = []
-        result = None
+        num = 0
+        negative = False
+        current = None
+        num_started = False   # ✅ NEW FLAG
+
+        for ch in s:
+            if ch == '[':
+                if current:
+                    stack.append(current)
+                current = NestedInteger()
         
-        # Variables to track the number being parsed
-        curr_num = 0
-        is_negative = False
-        num_started = False
+            elif ch == '-':
+                negative = True
         
-        for char in s:
-            if char == '[':
-                # Create a new NestedInteger representing a list
-                ni = NestedInteger()
-                
-                # If stack is not empty, add this new list to the top of the stack
-                if stack:
-                    stack[-1].add(ni)
-                else:
-                    # If stack is empty, this is our root result
-                    result = ni
-                
-                # Push the new list onto the stack
-                stack.append(ni)
-                
-                # Reset number parsing state
-                curr_num = 0
-                is_negative = False
-                num_started = False
-                
-            elif char == '-':
-                is_negative = True
-                num_started = True
-                
-            elif char.isdigit():
-                curr_num = curr_num * 10 + int(char)
-                num_started = True
-                
-            elif char == ',' or char == ']':
-                # If we were parsing a number, it has ended.
-                # Add the number to the NestedInteger at the top of the stack.
+            elif ch.isdigit():
+                num = num * 10 + int(ch)
+                num_started = True   # ✅ mark number started
+        
+            elif ch in ',]':
+                # ✅ FIXED CONDITION
                 if num_started:
-                    val = -curr_num if is_negative else curr_num
-                    stack[-1].add(NestedInteger(val))
-                    
-                    # Reset number parsing state
-                    curr_num = 0
-                    is_negative = False
-                    num_started = False
+                    if negative:
+                        num = -num
+                    current.add(NestedInteger(num))
                 
-                # If we encounter ']', we are done with the current list scope
-                if char == ']':
-                    stack.pop()
-        
-        return result
+                # reset
+                num = 0
+                negative = False
+                num_started = False
+            
+                # handle closing bracket
+                if ch == ']' and stack:
+                    parent = stack.pop()
+                    parent.add(current)
+                    current = parent
+
+        return current
         
