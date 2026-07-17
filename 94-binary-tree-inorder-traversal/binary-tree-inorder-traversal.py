@@ -11,16 +11,16 @@ class Solution:
         cur = root
 
         while cur or stack:
-            # Go as far left as possible, pushing nodes onto the stack.
+            
             while cur:
                 stack.append(cur)
                 cur = cur.left
 
-            # No more left children – process the node on top of the stack.
+            
             cur = stack.pop()
             result.append(cur.val)
 
-            # Now explore the right subtree of the popped node.
+            
             cur = cur.right
 
         return result
